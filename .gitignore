@@ -1,5 +1,5 @@
-#/messages/
-#/uploads/
+/messages/
+/uploads/
 package-lock.json
 server/dist/
 server/node_modules/
