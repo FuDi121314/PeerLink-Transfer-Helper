@@ -1,5 +1,8 @@
-/messages/
+/messages/messages.json
+/customize/
 /uploads/
+
+# javascript && typescript
 package-lock.json
 server/dist/
 server/node_modules/
