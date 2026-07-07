@@ -10,6 +10,8 @@ const app = express();
 app.use(express.json());
 app.use(routes);
 
+// proxy to get BG in customize folder
+// or put it in public folder, this line can delete
 app.use('/customize', express.static(path.join(ROOT, 'customize')));
 
 // Proxy to the PHP server on port 8000
