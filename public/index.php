@@ -14,7 +14,19 @@ if (file_exists(__DIR__ . '/' . $fixedBg)) {
 <head>
     <title>P2P Transfer</title>
     <style>
-        body { background:#121212; color:#e0e0e0; font-family:sans-serif; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; }
+        body { 
+            background:#121212; 
+            color:#e0e0e0; 
+            font-family:sans-serif; 
+            display:flex; 
+            align-items:center; 
+            justify-content:center; 
+            min-height:100vh; 
+            margin:0; 
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }
         <?php if($bgImage): ?>body { background-image:url('<?=$bgImage?>'); background-size:cover; background-position:center; }<?php endif; ?>
         .container { background:rgba(0,0,0,0.7); padding:40px; border-radius:10px; text-align:center; }
         button { background:#333; color:#fff; border:none; padding:15px 30px; margin:10px; font-size:18px; cursor:pointer; border-radius:5px; }

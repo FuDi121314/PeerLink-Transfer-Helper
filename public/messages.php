@@ -35,6 +35,9 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             font-family: sans-serif;
             margin: 0;
             padding: 20px;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
         }
         <?php if($bgImage): ?>
         body {
@@ -170,10 +173,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const paginationDiv = document.getElementById('pagination');
 
     function getRandomBg() {
-        if (msgBgImages.length === 0) return '';
-        const randomImage = msgBgImages[Math.floor(Math.random() * msgBgImages.length)];
-        return `url('${msgBgPath}${randomImage}')`;
+        // If images exist, pick a random one
+        if (msgBgImages.length > 0) {
+            const randomImage = msgBgImages[Math.floor(Math.random() * msgBgImages.length)];
+            return `url('${msgBgPath}${randomImage}')`;
+        }
+        // Fallback: cycle through a palette of dark colours so each box is distinct
+        const fallbackColors = ['#2c3e50', '#34495e', '#1e2f3f', '#2d2d2d', '#3a3a3a'];
+        const randomColor = fallbackColors[Math.floor(Math.random() * fallbackColors.length)];
+        return randomColor;   // will be used as background-color, not background-image
     }
+    
 
     function renderPage(page) {
         const start = (page - 1) * messagesPerPage;
@@ -185,11 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const box = document.createElement('div');
             box.className = 'msg-box';
             const bgImg = getRandomBg();
-            if (bgImg) {
-                box.style.backgroundImage = bgImg;
-                box.style.backgroundSize = 'cover';
-                box.style.backgroundPosition = 'center';
-            }
+                if (bgImg.startsWith('url(')) {
+                    box.style.backgroundImage = bgImg;
+                    box.style.backgroundSize = 'cover';
+                    box.style.backgroundPosition = 'center';
+                } else {
+                    box.style.backgroundColor = bgImg;   // fallback solid color
+                }
 
             const textP = document.createElement('p');
             textP.textContent = msg.text;   // preserves unicode, no HTML injection
@@ -201,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const copyBtn = document.createElement('button');
             copyBtn.className = 'copy-btn';
             copyBtn.textContent = 'Copy';
-            copyBtn.addEventListener('click', () => {
+            copyBtn.addEventListener('click', () => {       // copy button
                 navigator.clipboard.writeText(msg.text).then(() => {
                     copyBtn.textContent = 'Copied!';
                     setTimeout(() => copyBtn.textContent = 'Copy', 2000);

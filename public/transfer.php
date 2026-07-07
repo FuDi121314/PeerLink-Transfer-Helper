@@ -16,7 +16,16 @@ if (file_exists(__DIR__ . '/' . $fixedBg)) {
     <meta charset="utf-8">
     <title>File Transfer</title>
     <style>
-        body { background:#121212; color:#e0e0e0; font-family:sans-serif; margin:0; padding:20px; }
+        body { 
+            background:#121212; 
+            color:#e0e0e0; 
+            font-family:sans-serif; 
+            margin:0; 
+            padding:20px; 
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }
         <?php if($bgImage): ?>body { background-image:url('<?=$bgImage?>'); background-size:cover; background-position:center; }<?php endif; ?>
         .container { background:rgba(0,0,0,0.8); padding:20px; border-radius:10px; max-width:600px; margin:auto; }
         button, input[type="file"], input[type="text"] { background:#333; color:#fff; border:1px solid #555; padding:10px; margin:10px 0; border-radius:5px; }
