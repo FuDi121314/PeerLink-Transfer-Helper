@@ -1,5 +1,5 @@
 <?php include 'config.php';
-$wsUrl = str_replace('http', 'ws', SERVER_URL);
+$wsUrl = str_replace(['http://', 'https://'], ['ws://', 'wss://'], SERVER_URL);
 $bgImage = '';
 $fixedBg = '../customize/background/bg_transfer.png';
 if (file_exists(__DIR__ . '/' . $fixedBg)) {
@@ -13,6 +13,7 @@ if (file_exists(__DIR__ . '/' . $fixedBg)) {
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>File Transfer</title>
     <style>
         body { background:#121212; color:#e0e0e0; font-family:sans-serif; margin:0; padding:20px; }
@@ -61,67 +62,135 @@ if (file_exists(__DIR__ . '/' . $fixedBg)) {
 </div>
 
 <script>
-const wsUrl = '<?=$wsUrl?>';
-let ws, receivedFileName = 'downloaded_file';
+document.addEventListener('DOMContentLoaded', () => {
+    const wsUrl = '<?= $wsUrl ?>';
+    let ws;
+    let receivedFileName = 'downloaded_file';
+    const statusDiv = document.getElementById('p2pStatus');
 
-function connectWs() {
-    if (ws && ws.readyState === WebSocket.OPEN) return;
-    ws = new WebSocket(wsUrl);
-    ws.binaryType = 'arraybuffer';
-    ws.onmessage = e => {
-        if (e.data instanceof ArrayBuffer) {
-            const blob = new Blob([e.data]);
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = receivedFileName;
-            a.click();
-            document.getElementById('p2pStatus').textContent = 'File downloaded.';
-        } else {
-            const m = JSON.parse(e.data);
-            if (m.type === 'uploader-status' && m.status === 'you-are-uploader') {
-                document.getElementById('p2pStatus').textContent = 'You are uploader. Choose file.';
-                document.getElementById('p2pUploadUI').classList.remove('hidden');
-            } else if (m.type === 'uploader-status' && m.status === 'queued') {
-                document.getElementById('p2pStatus').textContent = 'Queued...';
-            } else if (m.type === 'download-status' && m.status === 'rejected') {
-                document.getElementById('p2pStatus').textContent = 'No uploader. Rejected.';
-            } else if (m.type === 'p2p-file-start') {
-                receivedFileName = m.filename;
+    function connectWs() {
+        if (ws && ws.readyState === WebSocket.OPEN) return;
+        ws = new WebSocket(wsUrl);
+        ws.binaryType = 'arraybuffer';
+        ws.onopen = () => {
+            statusDiv.textContent = 'WebSocket connected.';
+        };
+        ws.onmessage = (e) => {
+            if (e.data instanceof ArrayBuffer) {
+                const blob = new Blob([e.data]);
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = receivedFileName;
+                a.click();
+                statusDiv.textContent = 'File downloaded.';
+            } else {
+                try {
+                    const m = JSON.parse(e.data);
+                    handleWsMessage(m);
+                } catch(err) {
+                    console.error('Invalid JSON:', e.data);
+                }
             }
+        };
+        ws.onerror = (err) => {
+            statusDiv.textContent = 'WebSocket error. Check server.';
+            console.error(err);
+        };
+        ws.onclose = () => {
+            statusDiv.textContent = 'WebSocket disconnected.';
+        };
+    }
+
+    function handleWsMessage(m) {
+        switch(m.type) {
+            case 'uploader-status':
+                if (m.status === 'you-are-uploader') {
+                    document.getElementById('p2pUploadUI').classList.remove('hidden');
+                    statusDiv.textContent = 'You are uploader. Choose a file.';
+                } else if (m.status === 'queued') {
+                    statusDiv.textContent = 'Waiting in queue for uploader slot...';
+                }
+                break;
+            case 'download-status':
+                if (m.status === 'rejected') {
+                    alert('No active uploader. Download rejected.');
+                    statusDiv.textContent = 'No uploader available.';
+                } else if (m.status === 'waiting-for-uploader') {
+                    statusDiv.textContent = 'Waiting for uploader to send file...';
+                }
+                break;
+            case 'p2p-file-start':
+                receivedFileName = m.filename;
+                statusDiv.textContent = `Receiving file: ${m.filename} (${m.size} bytes)`;
+                break;
+            default:
+                console.log('Unhandled message:', m);
         }
-    };
-}
+    }
 
-document.getElementById('p2pUploadBtn').onclick = () => {
-    connectWs();
-    ws.onopen = () => ws.send(JSON.stringify({type:'p2p-upload-request'}));
-};
-document.getElementById('p2pDownloadBtn').onclick = () => {
-    connectWs();
-    ws.onopen = () => {
-        ws.send(JSON.stringify({type:'p2p-download-request'}));
-        document.getElementById('p2pDownloadUI').classList.remove('hidden');
-    };
-};
-document.getElementById('p2pSendFileBtn').onclick = () => {
-    const file = document.getElementById('p2pFileInput').files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-        ws.send(JSON.stringify({type:'p2p-file-start', filename:file.name, size:file.size}));
-        ws.send(reader.result);
-        document.getElementById('p2pStatus').textContent = 'File sent.';
-    };
-    reader.readAsArrayBuffer(file);
-};
+    // Radio toggle
+    document.querySelectorAll('input[name="mode"]').forEach(r => {
+        r.addEventListener('change', () => {
+            const p2p = document.getElementById('p2pSection');
+            const srv = document.getElementById('serverSection');
+            if (r.value === 'p2p') {
+                p2p.classList.remove('hidden');
+                srv.classList.add('hidden');
+            } else {
+                p2p.classList.add('hidden');
+                srv.classList.remove('hidden');
+            }
+        });
+    });
 
-document.querySelectorAll('input[name=mode]').forEach(r => r.onchange = () => {
-    const p2p = document.getElementById('p2pSection');
-    const srv = document.getElementById('serverSection');
-    if (r.value === 'p2p') { p2p.classList.remove('hidden'); srv.classList.add('hidden'); }
-    else { p2p.classList.add('hidden'); srv.classList.remove('hidden'); }
+    // P2P Upload request
+    document.getElementById('p2pUploadBtn').addEventListener('click', () => {
+        connectWs();
+        ws.onopen = () => {
+            ws.send(JSON.stringify({type:'p2p-upload-request'}));
+        };
+    });
+
+    // Send file button
+    document.getElementById('p2pSendFileBtn').addEventListener('click', () => {
+        const fileInput = document.getElementById('p2pFileInput');
+        const file = fileInput.files[0];
+        if (!file) {
+            alert('Please select a file first.');
+            return;
+        }
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+            alert('WebSocket not connected. Try uploading again.');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            ws.send(JSON.stringify({type:'p2p-file-start', filename:file.name, size:file.size}));
+            ws.send(reader.result);
+            statusDiv.textContent = 'File sent.';
+            document.getElementById('p2pUploadUI').classList.add('hidden');
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    // P2P Download request
+    document.getElementById('p2pDownloadBtn').addEventListener('click', () => {
+        connectWs();
+        ws.onopen = () => {
+            ws.send(JSON.stringify({type:'p2p-download-request'}));
+            document.getElementById('p2pDownloadUI').classList.remove('hidden');
+        };
+    });
+
+    // Start download button (if needed, mostly automatic)
+    document.getElementById('p2pStartDownloadBtn').addEventListener('click', () => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({type:'p2p-download-request'}));
+        } else {
+            alert('WebSocket not connected. Click "P2P Download" first.');
+        }
+    });
 });
-window.onload = connectWs;
 </script>
 </body>
 </html>
