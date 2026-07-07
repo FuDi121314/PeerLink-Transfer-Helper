@@ -6,3 +6,6 @@
 package-lock.json
 server/dist/
 server/node_modules/
+
+# public config
+public/config.php

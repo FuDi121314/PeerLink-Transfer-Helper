@@ -2,7 +2,7 @@
 
 // Background for the whole page
 $bgImage = '';
-$fixedBg = '../customize/background/bg_messages.png';
+$fixedBg = '../customize/background/background.png';
 if (file_exists(__DIR__ . '/' . $fixedBg)) {
     $bgImage = $fixedBg;
 } else {

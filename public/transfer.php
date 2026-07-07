@@ -1,7 +1,7 @@
 <?php include 'config.php';
 $wsUrl = str_replace(['http://', 'https://'], ['ws://', 'wss://'], SERVER_URL);
 $bgImage = '';
-$fixedBg = '../customize/background/bg_transfer.png';
+$fixedBg = '../customize/background/background.png';
 if (file_exists(__DIR__ . '/' . $fixedBg)) {
     $bgImage = $fixedBg;
 } else {

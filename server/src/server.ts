@@ -3,11 +3,14 @@ import { createServer } from 'http';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import routes from './routes';
 import { setupWebSocket } from './websocket';
-import { PORT } from './config';
+import { PORT, ROOT } from './config';
+import path from 'path';
 
 const app = express();
 app.use(express.json());
 app.use(routes);
+
+app.use('/customize', express.static(path.join(ROOT, 'customize')));
 
 // Proxy to the PHP server on port 8000
 app.use(

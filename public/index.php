@@ -2,7 +2,7 @@
 $bgDir = __DIR__ . '/../customize/background/';
 $images = glob($bgDir . '*.png');
 $bgImage = '';
-$fixedBg = '../customize/background/bg_index.png';
+$fixedBg = '../customize/background/background.png';
 if (file_exists(__DIR__ . '/' . $fixedBg)) {
     $bgImage = $fixedBg;
 } elseif (!empty($images)) {
