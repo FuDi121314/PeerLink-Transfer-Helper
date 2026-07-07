@@ -2,22 +2,28 @@
 
 // Background for the whole page
 $bgImage = '';
-$fixedBg = '../customize/background/background.png';
-if (file_exists(__DIR__ . '/' . $fixedBg)) {
-    $bgImage = $fixedBg;
+$fixedBgPath = __DIR__ . '/../customize/background/bg_messages.png';
+if (file_exists($fixedBgPath)) {
+    $bgImage = '/customize/background/bg_messages.png';
 } else {
     $bgDir = __DIR__ . '/../customize/background/';
     $images = glob($bgDir . '*.png');
-    if (!empty($images)) $bgImage = '../customize/background/' . basename($images[array_rand($images)]);
+    if (!empty($images)) {
+        $bgImage = '/customize/background/' . basename($images[array_rand($images)]);
+    }
 }
 
-// Fetch all messages from API
+// Message box backgrounds – array of filenames (without path)
+$msgBgDir = __DIR__ . '/../customize/messageBG/';
+$msgBgImages = glob($msgBgDir . '*.png');
+$msgBgList = $msgBgImages ? array_map('basename', $msgBgImages) : [];
+
+// Fetch messages from API
 $messagesJson = file_get_contents(SERVER_URL . '/messages');
 $messages = json_decode($messagesJson, true) ?: [];
 
-// Message box backgrounds directory
-$msgBgDir = __DIR__ . '/../customize/messageBG/';
-$msgBgImages = glob($msgBgDir . '*.png');
+// Reverse to show newest first (index 0 = latest, placed top‑left on page 1)
+$messages = array_reverse($messages);
 
 // Admin mode (delete buttons)
 $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
@@ -35,7 +41,7 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             font-family: sans-serif;
             margin: 0;
             padding: 20px;
-            background-attachment: fixed;
+            background-attachment: fixed;        /* prevents background shift */
             background-size: cover;
             background-position: center;
         }
@@ -83,7 +89,7 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
 
         .msg-box p {
             margin: 0 0 10px 0;
-            white-space: pre-wrap; /* preserve line breaks */
+            white-space: pre-wrap;
         }
 
         .msg-buttons {
@@ -159,11 +165,11 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Embedded messages from PHP
+    // Data from PHP (newest first already)
     const allMessages = <?= json_encode($messages) ?>;
     const isAdmin = <?= $isAdmin ? 'true' : 'false' ?>;
-    const msgBgImages = <?= json_encode($msgBgImages ? array_map('basename', $msgBgImages) : []) ?>;
-    const msgBgPath = '../customize/messageBG/';
+    const msgBgImages = <?= json_encode($msgBgList) ?>;
+    const msgBgPath = '/customize/messageBG/';
 
     const messagesPerPage = 12;
     let currentPage = 1;
@@ -172,18 +178,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('messagesContainer');
     const paginationDiv = document.getElementById('pagination');
 
+    // Fallback colour palette (used if no images)
+    const fallbackColors = ['#2c3e50', '#34495e', '#1e2f3f', '#2d2d2d', '#3a3a3a', '#4a235a', '#1b4f72'];
+
     function getRandomBg() {
-        // If images exist, pick a random one
+        // Return a random image url() string, or a random solid colour
         if (msgBgImages.length > 0) {
             const randomImage = msgBgImages[Math.floor(Math.random() * msgBgImages.length)];
             return `url('${msgBgPath}${randomImage}')`;
         }
-        // Fallback: cycle through a palette of dark colours so each box is distinct
-        const fallbackColors = ['#2c3e50', '#34495e', '#1e2f3f', '#2d2d2d', '#3a3a3a'];
-        const randomColor = fallbackColors[Math.floor(Math.random() * fallbackColors.length)];
-        return randomColor;   // will be used as background-color, not background-image
+        return fallbackColors[Math.floor(Math.random() * fallbackColors.length)];
     }
-    
 
     function renderPage(page) {
         const start = (page - 1) * messagesPerPage;
@@ -191,29 +196,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const pageMessages = allMessages.slice(start, end);
 
         container.innerHTML = '';
+
         pageMessages.forEach(msg => {
             const box = document.createElement('div');
             box.className = 'msg-box';
-            const bgImg = getRandomBg();
-                if (bgImg.startsWith('url(')) {
-                    box.style.backgroundImage = bgImg;
-                    box.style.backgroundSize = 'cover';
-                    box.style.backgroundPosition = 'center';
-                } else {
-                    box.style.backgroundColor = bgImg;   // fallback solid color
-                }
+
+            // Assign a new random background to EACH box
+            const bg = getRandomBg();
+            if (bg.startsWith('url(')) {
+                box.style.backgroundImage = bg;
+                box.style.backgroundSize = 'cover';
+                box.style.backgroundPosition = 'center';
+            } else {
+                box.style.backgroundColor = bg;
+            }
 
             const textP = document.createElement('p');
-            textP.textContent = msg.text;   // preserves unicode, no HTML injection
+            textP.textContent = msg.text;
             box.appendChild(textP);
 
             const btnDiv = document.createElement('div');
             btnDiv.className = 'msg-buttons';
 
+            // Copy button
             const copyBtn = document.createElement('button');
             copyBtn.className = 'copy-btn';
             copyBtn.textContent = 'Copy';
-            copyBtn.addEventListener('click', () => {       // copy button
+            copyBtn.addEventListener('click', () => {
                 navigator.clipboard.writeText(msg.text).then(() => {
                     copyBtn.textContent = 'Copied!';
                     setTimeout(() => copyBtn.textContent = 'Copy', 2000);
@@ -221,7 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             btnDiv.appendChild(copyBtn);
 
-            if (isAdmin) {      //only admin can delete
+            // Admin delete link
+            if (isAdmin) {
                 const deleteLink = document.createElement('a');
                 deleteLink.className = 'delete-btn';
                 deleteLink.textContent = 'Delete';
