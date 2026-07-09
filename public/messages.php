@@ -70,7 +70,8 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
         }
 
         .msg-box {
-            padding: 15px;
+            min-height: 220px;
+            padding: 20px;
             border-radius: 8px;
             color: #fff;
             text-shadow: 0 1px 3px rgba(0,0,0,0.8);
