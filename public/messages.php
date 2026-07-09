@@ -15,7 +15,7 @@ if (file_exists($fixedBgPath)) {
 
 // Message box backgrounds – array of filenames (without path)
 $msgBgDir = __DIR__ . '/../customize/messageBG/';
-$msgBgImages = glob($msgBgDir . '*.{png,jpg,jpeg}', GLOB_BRACE);        // GLOB_BRACE = fixed random BG
+$msgBgImages = glob($msgBgDir . '*.{png,jpg,jpeg}', GLOB_BRACE);
 $msgBgList = $msgBgImages ? array_map('basename', $msgBgImages) : [];
 
 // Fetch messages from API
@@ -61,10 +61,10 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             margin: auto;
         }
 
-        /* Multi-column grid: auto-fill with min width 250px, max 1fr */
+        /* Multi-column grid: auto-fill with min width 333px, max 1fr */
         .message-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(333px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const msgBgImages = <?= json_encode($msgBgList) ?>;
     const msgBgPath = '/customize/messageBG/';
 
-    const messagesPerPage = 12;
+    const messagesPerPage = 9;
     let currentPage = 1;
     const totalPages = Math.ceil(allMessages.length / messagesPerPage);
 
