@@ -15,7 +15,7 @@ if (file_exists($fixedBgPath)) {
 
 // Message box backgrounds – array of filenames (without path)
 $msgBgDir = __DIR__ . '/../customize/messageBG/';
-$msgBgImages = glob($msgBgDir . '*.png');
+$msgBgImages = glob($msgBgDir . '*.{png,jpg,jpeg}', GLOB_BRACE);        // GLOB_BRACE = fixed random BG
 $msgBgList = $msgBgImages ? array_map('basename', $msgBgImages) : [];
 
 // Fetch messages from API
@@ -41,7 +41,7 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             font-family: sans-serif;
             margin: 0;
             padding: 20px;
-            background-attachment: fixed;        /* prevents background shift */
+            background-attachment: fixed;
             background-size: cover;
             background-position: center;
         }
@@ -185,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Return a random image url() string, or a random solid colour
         if (msgBgImages.length > 0) {
             const randomImage = msgBgImages[Math.floor(Math.random() * msgBgImages.length)];
+            //console.log(msgBgImages.length);      //debugger
             return `url('${msgBgPath}${randomImage}')`;
         }
         return fallbackColors[Math.floor(Math.random() * fallbackColors.length)];

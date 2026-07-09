@@ -23,5 +23,20 @@
     "id": 5,
     "text": "dd\r\n",
     "timestamp": 1783429041468
+  },
+  {
+    "id": 6,
+    "text": "中文",
+    "timestamp": 1783433056351
+  },
+  {
+    "id": 7,
+    "text": "你好",
+    "timestamp": 1783433065205
+  },
+  {
+    "id": 8,
+    "text": "test by other device",
+    "timestamp": 1783512145965
   }
 ]
