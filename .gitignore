@@ -1,6 +1,7 @@
 /messages/messages.json
 /customize/
 /uploads/
+/temp/
 
 # javascript && typescript
 package-lock.json
@@ -9,3 +10,6 @@ server/node_modules/
 
 # public config
 public/config.php
+
+# for self reference
+/selfRef/
