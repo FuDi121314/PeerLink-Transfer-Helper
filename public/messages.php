@@ -35,13 +35,16 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Messages</title>
     <style>
+        html, body {
+            min-height: 100vh;
+        }
         body {
             background: #121212;
             color: #e0e0e0;
             font-family: sans-serif;
             margin: 0;
             padding: 20px;
-            background-attachment: fixed;
+            background-repeat: no-repeat;
             background-size: cover;
             background-position: center;
         }
@@ -52,6 +55,12 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             background-position: center;
         }
         <?php endif; ?>
+
+        @media (max-width: 768px) {
+            body {
+                background-attachment: scroll;
+            }
+        }
 
         .container {
             background: rgba(0,0,0,0.7);
