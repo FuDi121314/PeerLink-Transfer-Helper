@@ -70,10 +70,10 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             margin: auto;
         }
 
-        /* Multi-column grid: auto-fill with min width 333px, max 1fr */
+        /* Multi-column grid: auto-fill with min width 300px, max 1fr */
         .message-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(333px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -83,7 +83,7 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             padding: 20px;
             border-radius: 8px;
             color: #fff;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.3);
             /* Default background if no image */
             background: #333;
             /* Let height adapt to content */
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         paginationDiv.innerHTML = '';
         if (totalPages > 1) {
             const prevBtn = document.createElement('button');
-            prevBtn.textContent = 'Previous';
+            prevBtn.textContent = '←';
             prevBtn.disabled = (currentPage === 1);
             prevBtn.addEventListener('click', () => {
                 if (currentPage > 1) {
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
             paginationDiv.appendChild(pageIndicator);
 
             const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Next';
+            nextBtn.textContent = '→';
             nextBtn.disabled = (currentPage === totalPages);
             nextBtn.addEventListener('click', () => {
                 if (currentPage < totalPages) {
