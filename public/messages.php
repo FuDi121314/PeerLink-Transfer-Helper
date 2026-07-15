@@ -44,6 +44,7 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             font-family: sans-serif;
             margin: 0;
             padding: 20px;
+            background-attachment: fixed;
             background-repeat: no-repeat;
             background-size: cover;
             background-position: center;

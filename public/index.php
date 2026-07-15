@@ -24,19 +24,40 @@ if (file_exists(__DIR__ . '/' . $fixedBg)) {
             min-height:100vh; 
             margin:0; 
             background-attachment: fixed;
+            background-repeat: no-repeat;
             background-size: cover;
             background-position: center;
         }
-        <?php if($bgImage): ?>body { background-image:url('<?=$bgImage?>'); background-size:cover; background-position:center; }<?php endif; ?>
-        .container { background:rgba(0,0,0,0.7); padding:40px; border-radius:10px; text-align:center; }
-        button { background:#333; color:#fff; border:none; padding:15px 30px; margin:10px; font-size:18px; cursor:pointer; border-radius:5px; }
+        <?php if($bgImage): ?>
+        body { 
+            background-image:url('<?=$bgImage?>'); 
+            background-size:cover; 
+            background-position:center; 
+        }
+        <?php endif; ?>
+        .container { 
+            background:rgba(0,0,0,0.7); 
+            padding:40px; 
+            border-radius:10px; 
+            text-align:center; 
+        }
+        button { 
+            background:#333; 
+            color:#fff; 
+            border:none; 
+            padding:15px 30px; 
+            margin:10px; 
+            font-size:18px; 
+            cursor:pointer; 
+            border-radius:5px; 
+        }
         button:hover { background:#555; }
         a { text-decoration:none; color:inherit; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>P2P File Transfer & Messaging</h1>
+    <h1>PeerLink Transfer</h1>
     <a href="transfer.php"><button>Transfer File</button></a>
     <a href="messages.php"><button>Send Message</button></a>
 </div>
