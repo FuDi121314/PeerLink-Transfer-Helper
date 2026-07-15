@@ -52,8 +52,12 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
         <?php if($bgImage): ?>
         body {
             background-image: url('<?= $bgImage ?>');
-            background-size: cover;
-            background-position: center;
+            /* 
+            for these two line you can directly use {background-size:cover; background-position:center; }
+            or define $bg_xxx in config.php if you need
+            */
+            background-size: <?php echo $bg_size ?? 'cover'; ?>;
+            background-position: <?php echo $bg_position ?? 'center'; ?>; 
         }
         <?php endif; ?>
 
