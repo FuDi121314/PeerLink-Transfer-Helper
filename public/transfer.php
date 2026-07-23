@@ -132,8 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('p2pUploadUI').classList.remove('hidden');
                     statusDiv.textContent = 'You are uploader. Choose a file.';
                 } else if (m.status === 'queued') {
-                    statusDiv.textContent = 'Waiting in queue for uploader slot...';
+                    // Initial position when joining the queue
+                    const pos = m.position || '?';
+                    statusDiv.textContent = `Waiting in queue (position: ${pos}).`;
                 }
+                break;
+            case 'queue-update':
+                // Periodically updated position
+                statusDiv.textContent = `Waiting in queue (position: ${m.position}).`;
                 break;
             case 'download-status':
                 if (m.status === 'rejected') {
@@ -151,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Unhandled message:', m);
         }
     }
+
 
     // Radio toggle
     document.querySelectorAll('input[name="mode"]').forEach(r => {
