@@ -87,8 +87,9 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             min-height: 220px;
             padding: 20px;
             border-radius: 8px;
+            /*font-size: 18px;*/
             color: #fff;
-            text-shadow: 2px 2px 3px rgba(0,0,0,0.3);
+            /*text-shadow: 2px 2px 3px rgba(0,0,0,0.3);*/
             /* Default background if no image */
             background: #333;
             /* Let height adapt to content */
@@ -98,6 +99,13 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            text-shadow:
+                -1px -1px 0 #222,
+                1px -1px 0 #222,
+                -1px 1px 0 #222,
+                1px 1px 0 #222;
+            /*-webkit-text-fill-color: transparent;
+            -webkit-text-stroke: 1px #000000;*/
         }
 
         /* If a random messageBG image exists, it will be applied inline */

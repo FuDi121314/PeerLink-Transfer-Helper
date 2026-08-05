@@ -17,4 +17,5 @@ php -S 0.0.0.0:8000 -t public/
 - [ ] consider 304 Not Modified  
 - [ ] admin mode?  
 - [ ] clear font   
+- [ ] light/dark mode  
 - [X] make a queue for P2P
