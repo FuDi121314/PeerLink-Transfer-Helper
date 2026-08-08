@@ -14,7 +14,6 @@ php -S 0.0.0.0:8000 -t public/
 ```
 
 ### ToDo  
-- [ ] consider 304 Not Modified  
 - [ ] admin mode?  
 - [X] clear font   
 - [ ] light/dark mode  
