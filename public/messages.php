@@ -15,7 +15,7 @@ if (file_exists($fixedBgPath)) {
 
 // Message box backgrounds – array of filenames (without path)
 $msgBgDir = __DIR__ . '/../customize/messageBG/';
-$msgBgImages = glob($msgBgDir . '*.{png,jpg,jpeg}', GLOB_BRACE);
+$msgBgImages = glob($msgBgDir . '*.{png,jpg,jpeg,gif}', GLOB_BRACE);
 $msgBgList = $msgBgImages ? array_map('basename', $msgBgImages) : [];
 
 // Fetch messages from API
@@ -57,7 +57,7 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
             or define $bg_xxx in config.php if you need
             */
             background-size: <?php echo $bg_size ?? 'cover'; ?>;
-            background-position: <?php echo $bg_position ?? 'center'; ?>; 
+            background-position: <?php echo $bg_position ?? 'center'; ?>;
         }
         <?php endif; ?>
 
@@ -84,6 +84,7 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
         }
 
         .msg-box {
+            position: relative;
             min-height: 220px;
             padding: 20px;
             border-radius: 8px;
@@ -104,21 +105,36 @@ $isAdmin = isset($_GET['admin']) && $_GET['admin'] === 'true';
                 1px -1px 0 #222,
                 -1px 1px 0 #222,
                 1px 1px 0 #222;
-            /*-webkit-text-fill-color: transparent;
-            -webkit-text-stroke: 1px #000000;*/
         }
 
-        /* If a random messageBG image exists, it will be applied inline */
+        /* Dark overlay */
+        .msg-box::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            pointer-events: none; 
+            border-radius: 8px; 
+        }
+        .msg-box:hover::after {
+            opacity: 0;
+        }
 
         .msg-box p {
             margin: 0 0 10px 0;
             white-space: pre-wrap;
+            position: relative; /* bring text above the overlay */
+            z-index: 1;
         }
 
         .msg-buttons {
             display: flex;
             gap: 5px;
             margin-top: auto;
+            position: relative;
+            z-index: 1; /* buttons above overlay */
         }
 
         .copy-btn, .delete-btn {
@@ -208,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Return a random image url() string, or a random solid colour
         if (msgBgImages.length > 0) {
             const randomImage = msgBgImages[Math.floor(Math.random() * msgBgImages.length)];
-            //console.log(msgBgImages.length);      //debugger
             return `url('${msgBgPath}${randomImage}')`;
         }
         return fallbackColors[Math.floor(Math.random() * fallbackColors.length)];
