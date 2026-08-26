@@ -13,3 +13,6 @@ public/config.php
 
 # for self reference
 /selfRef/
+
+#run
+run.cmd
